@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    table, td, th { border: 1px solid #ccc; border-collapse: collapse; padding: 6px; }
+    button { margin: 2px; padding: 4px 8px; }
+    .p { color: green; font-weight: bold; }
+    .a { color: red; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const students = [
+      { id: 1, name: "John", status: "" },
+      { id: 2, name: "Aisha", status: "" },
+      { id: 3, name: "Rahul", status: "" }
+    ];
+
+    const reducer = (state, action) => {
+      if (action.type === "mark")
+        return state.map(s => s.id === action.id ? { ...s, status: action.val } : s);
+      if (action.type === "reset")
+        return state.map(s => ({ ...s, status: "" }));
+      return state;
+    };
+
+    function App() {
+      const [list, dispatch] = React.useReducer(reducer, students);
+
+      return (
+        <>
+          <h2>Attendance</h2>
+
+          <table>
+            <tbody>
+              {list.map(s => (
+                <tr key={s.id}>
+                  <td>{s.name}</td>
+                  <td className={s.status === "Present" ? "p" : s.status === "Absent" ? "a" : ""}>
+                    {s.status || "Not Marked"}
+                  </td>
+                  <td>
+                    <button onClick={() => dispatch({ type: "mark", id: s.id, val: "Present" })}>P</button>
+                    <button onClick={() => dispatch({ type: "mark", id: s.id, val: "Absent" })}>A</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          <button onClick={() => dispatch({ type: "reset" })}>Reset</button>
+        </>
+      );
+    }
+
+    const container = document.getElementById("root");
+    if (ReactDOM.createRoot) {
+      ReactDOM.createRoot(container).render(<App />);
+    } else {
+      ReactDOM.render(<App />, container);
+    }
+  </script>
+</body>
+</html>
